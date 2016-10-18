@@ -1,3 +1,8 @@
+/*
+    Problem : Perform the Transposition cipher encryption and decryption  
+    BY:
+        Rishav Kumar Goswami
+*/
 #include <bits/stdc++.h>
 
 using namespace std;
