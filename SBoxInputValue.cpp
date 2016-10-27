@@ -66,14 +66,17 @@ int main()
 	   	- 48-bit input for S-Box operation	
 	*/
 
-	/* 	Algorithm:
-		=========
+	/* Algorithm:
+	   =========
 		Step 0: Apply Left Circular Shift and then PChoice1() on given 56 bit key 
-		Step 1: Split the Input( i.e 64-bit i-th round Output of DES) into 2-half each of 32-bit i.e LeftStr and RightStr
+		Step 1: Split the Input( i.e 64-bit i-th round Output of DES) into 2-half 
+				each of 32-bit i.e LeftStr and RightStr
 		Step 2: (i+1)-th LeftStr = RightStr i.e store it in output result 
 		Step 3: Motivation: (i+1)-th RightStr = LeftStr (XOR) EncryptionFunction(RightStr[i],Key[i])
-				Step 3.1: Perform Expansion on the 32-bit string to 48-bit string using ExpansionPermutaionFunction()
-				Step 3.2: Perform XOR on 48-bit OutPut of above(Step 3.2) expansion and the 48-bit Key Input for i-th round.
+			Step 3.1: Perform Expansion on the 32-bit string to 48-bit string using 
+					ExpansionPermutaionFunction()
+			Step 3.2:Perform XOR on 48-bit OutPut of above(Step 3.2) expansion and 
+					the 48-bit Key Input for i-th round.
 		Step 4: Print the Xor Output, Since it is to be passed to the S-Box 
 	*/
 

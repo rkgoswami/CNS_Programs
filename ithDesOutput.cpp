@@ -4,8 +4,9 @@
         Rishav Kumar Goswami
 */
 #include <bits/stdc++.h>
-#include "desHeader.h" /*Self made header file to facilite the saving of static 
-						table and utility functions for DES encryption*/
+#include "desHeader.h" 
+/*Self made header file to facilite the saving of static 
+	table and utility functions for DES encryption*/
 
 using namespace std;
 
@@ -13,7 +14,8 @@ using namespace std;
     which included following :
         - S-Box Table (in form of 3D-matrix "int SBox[8][4][16]")
         - Permutation choice 2 table (in form of matrix "int PChoice2[6][8]")
-        - Shift Value Table (in form of array "int ShiftVal[16]") for shift operation to generate C[i] and D[i]
+        - Shift Value Table (in form of array "int ShiftVal[16]") 
+        	for shift operation to generate C[i] and D[i]
 */
 
 int conversionBinToInt(string s){
@@ -106,8 +108,10 @@ int main()
 	/* 	Algorithm:
 		=========
 		Step 1: Perform S-Box operation on the 48-bit input given for S-Box operation
-		Step 2: Perform Permutation of the output of the S-Box using PFunTable[4][8] defined in "desHeader.h" header file
-		Step 3: Perform XOR on 32-bit OutPut of above(Step 2) permutation table and the 32-bit LeftStr Input of (i-1)th round.
+		Step 2: Perform Permutation of the output of the S-Box using PFunTable[4][8] 
+				defined in "desHeader.h" header file
+		Step 3: Perform XOR on 32-bit OutPut of above(Step 2) permutation table and 
+				the 32-bit LeftStr Input of (i-1)th round.
 		Step 4: Print the Xor Output, Since it is the RightStr of i-th round
 	*/
 	string str48Input;
