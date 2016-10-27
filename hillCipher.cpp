@@ -180,18 +180,11 @@ void inverseMatrix(int mat[N][N],int invMat[N][N],int n){
 	for (int i = 0; i < n; ++i){
 		for (int j = 0; j < n; ++j){
 			invMat[i][j]=k*invMat[i][j];
-			//check negative value
-			if(invMat[i][j]<0){
-				//call function negModulus()
-				int val = negModulus(invMat[i][j]);
-				invMat[i][j]=val;
-			}
-			else{
-				invMat[i][j]%=26;
-			}
+			
+			//modulus 26
+			invMat[i][j] = (invMat[i][j]<0)?negModulus(invMat[i][j]):(invMat[i][j]%26);
 		}
 	}
-	
 }
 
 int main(){
@@ -226,7 +219,7 @@ int main(){
 	for(int i=0;i<rem;++i){
 		message+='x';
 	}
-	//n=2;
+	
 	
 	//get the key matrix
 	cout<<"\nEnter the key matrix :";
@@ -239,10 +232,7 @@ int main(){
 	string enMsg="";
 
 	//main logic for encrytpion
-	int c=0;
 	for(int i=0;i<message.length();){
-
-		c++;
 		for(int j=0;j<n;++j){
 			if(message[i]==' '){
 				j--;
@@ -290,10 +280,7 @@ int main(){
     }
 
     string decMsg="";
-    c=0;
     for(int i=0;i<enMsg.length();){
-
-		c++;
 		for(int j=0;j<n;++j){
 			mat[j][0]=(enMsg[i++]-'a') ;	
 		}	
@@ -304,8 +291,6 @@ int main(){
 		for(int i=0;i<n;++i){
 			decMsg+=(char)((res[i][0] % 26) + 97);
 		}
-
-		
 	}
 
 	//Display the encrypted text

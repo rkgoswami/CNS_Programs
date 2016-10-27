@@ -50,7 +50,6 @@ void generateNthDesKey(string Key[2],int round){
     rotChar = Key[1].substr(0,shift);
     for(int i=0;i<shift;++i)
         Key[1].erase(Key[1].begin());
-    //Key[1].erase(Key[1].begin()+shift-1);
     Key[1]+=rotChar;
 }
 
@@ -81,15 +80,15 @@ int main()
 	*/
 
 	int i;
-	cout<<"\nEnter the round no .: ";
+	cout<<"\nEnter the round number(1-16): ";
 	cin>>i;
 
 	string binDesOutput;
-	cout<<"\nEnter the i-th round output of DES( 64-bit binary digit ) : ";
+	cout<<"\nEnter the i-th round output of DES(64-bit binary digit) : ";
 	cin>>binDesOutput;
 
 	string bin56Key;
-	cout<<"\nEnter the i-1 th round key( 56-bit binary digit ) : ";
+	cout<<"\nEnter the (i-1)th round key(56-bit binary digit) : ";
 	cin>>bin56Key;
 
 	//Step 0: Apply Shift and PChoice2() to reduce the 56-bit to 48-bit key
