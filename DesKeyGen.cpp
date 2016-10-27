@@ -63,7 +63,7 @@ string generatePChoiceOneKey(string tempKey){
     string PChoiceOutput="";
     for(int i=0;i<8;++i){
         for(int j=0;j<7;++j){
-            int ch = PChoice1[i][j]-1;
+            //int ch = PChoice1[i][j]-1;
             PChoiceOutput+=tempKey[PChoice1[i][j]-1];
         }
     }
@@ -90,7 +90,8 @@ void generateNthDesKey(string Key[2],int round){
 
     //rotate right string
     string rotChar = Key[0].substr(0,shift);
-    //string temp=Key[0];
+    
+    //delete the #shift characters from begining and append it to end
     for(int i=0;i<shift;++i)
         Key[0].erase(Key[0].begin());
     Key[0]+=rotChar;
@@ -99,7 +100,6 @@ void generateNthDesKey(string Key[2],int round){
     rotChar = Key[1].substr(0,shift);
     for(int i=0;i<shift;++i)
         Key[1].erase(Key[1].begin());
-    //Key[1].erase(Key[1].begin()+shift-1);
     Key[1]+=rotChar;
 }
 
