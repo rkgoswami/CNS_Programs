@@ -114,19 +114,13 @@ void inverseMatrix2x2(int mat[N][N],int invMat[N][N],int n){
 	cout<<"\nDet = "<<det;
 	cout<<"\nK^-1 = "<<k;
 
-	//Step 7:
+
 	for (int i = 0; i < n; ++i){
 		for (int j = 0; j < n; ++j){
 			invMat[i][j]=k*invMat[i][j];
 			//check negative value
-			if(invMat[i][j]<0){
-				//call function negModulus()
-				int val = negModulus(invMat[i][j]);
-				invMat[i][j]=val;
-			}
-			else{
-				invMat[i][j]%=26;
-			}
+			invMat[i][j] = (invMat[i][j]<0)?negModulus(invMat[i][j]):(invMat[i][j]%26);
+
 		}
 	}
 
@@ -233,6 +227,7 @@ int main(){
 
 	//main logic for encrytpion
 	for(int i=0;i<message.length();){
+		
 		for(int j=0;j<n;++j){
 			if(message[i]==' '){
 				j--;
