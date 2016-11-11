@@ -11,6 +11,8 @@
 #include <map> 
 using namespace std;
 
+//Give inputs within a max limit of 2^16 for demonstration, for larger values, modulus will fail.
+//If required add a specific modulus function to handle larger values.
 
 int main()
 {
