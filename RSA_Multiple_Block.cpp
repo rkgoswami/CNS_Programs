@@ -9,7 +9,7 @@
 
 using namespace std;
 
-long RSAEncrypt(int Pi,int e,long n){
+long RSAEncryptAndDecrypt(int Pi,int e,long n){
 
 	long val = Pi % n;
 	long tVal=1;
@@ -19,16 +19,6 @@ long RSAEncrypt(int Pi,int e,long n){
 
 	return tVal;
 
-}
-
-long RSADecrypt(int Di,int d,long n){
-	long val = Di % n;
-	long tVal=1;
-	for (int i = 1; i <= d; ++i){
-		tVal = (tVal*val)%n;
-	}
-
-	return tVal;
 }
 
 int gcd(int a,int b){
@@ -136,7 +126,7 @@ int main(){
 		}
 		P[k]=(x[0])*100 + (x[1]);
 		//Step 2 & 3:
-		C[k]=RSAEncrypt(P[k],e,n);
+		C[k]=RSAEncryptAndDecrypt(P[k],e,n);
 		k++;	
 	}
 	
@@ -150,7 +140,7 @@ int main(){
 	string DecMsg="";
 	int D[k];
 	for (int i = 0; i < k;i++){
-		D[i]=RSADecrypt(C[i],d,n);	
+		D[i]=RSAEncryptAndDecrypt(C[i],d,n);	
 	}
 	cout<<"\nRecovered Decimal Decrypted Set : [";
 	displaySet(D,k);
