@@ -47,8 +47,7 @@ int main(int argc, char const *argv[]){
 	
 	int sockfd;
 	connectionSetup(sockfd);
-
-
+	
 	//generate the Public and Private keys {PU,PR}
 	int p,q;
 	cout<<"\nEnter the value of p and q (both must prime): ";
@@ -70,7 +69,6 @@ int main(int argc, char const *argv[]){
 	}
 
 	//calculate d 
-
 	int d=1;
 	while(1){
 		if ((e*d)%phi_n ==1){
@@ -78,7 +76,6 @@ int main(int argc, char const *argv[]){
 		}
 		d++;
 	}
-
 	cout<<"\n{PU,PR} = { "<<e<<" , "<<d<<" }";
 
 	int PU[] = {e,n};
@@ -90,20 +87,17 @@ int main(int argc, char const *argv[]){
 	temp = htons(PU[1]);
  	send(sockfd,&temp,sizeof(temp),0);
 	
-
 	//send and recieve
 	long Ltemp;
 	recv(sockfd,&Ltemp,sizeof(Ltemp),0);
 	long enMsg = ntohl(Ltemp);
+	
 	//decrypt the enMsg
 	cout<<"\nRecieved encrypted message : "<<enMsg;
-
+	
 	long msg = RSA_EncryptAndDecrypt(enMsg,PR);
-
 	cout<<"\nRecieved decrypted message : "<<msg;
-
-
-
 	cout<<"\n";
+	
 	return 0;
 }
