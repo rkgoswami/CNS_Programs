@@ -67,7 +67,7 @@ int main()
 
 	/* Algorithm:
 	   =========
-		Step 0: Apply Left Circular Shift and then PChoice1() on given 56 bit key 
+		Step 0: Apply Left Circular Shift and then PChoic2() on given 56 bit key 
 		Step 1: Split the Input( i.e 64-bit i-th round Output of DES) into 2-half 
 				each of 32-bit i.e LeftStr and RightStr
 		Step 2: (i+1)-th LeftStr = RightStr i.e store it in output result 

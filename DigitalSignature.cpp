@@ -69,8 +69,10 @@ int SimpleHash(string text){
 	//Step 2:
 	string binText = hexToBinary(hexText);
 
+	cout<<"\nbinText = "<<binText;
 	//Step 3:
 	string hashStr="";
+	
 	unsigned short a,b,c,d;
 	for(int i=0;i<binText.length()-4;i+=4){
 		a=(unsigned short)(binText[i]-'0');
@@ -83,6 +85,7 @@ int SimpleHash(string text){
 	//Step 4:
 	int hashVal = conversionBinToInt(hashStr);
 
+	cout<<"\nHashVal Generated = "<<hashVal;
 	return hashVal;
 
 }
@@ -98,17 +101,27 @@ int findInvModQ(int k,int q){
 	return invK;
 }
 
+long powerMod(long a,int x,int mod){
+
+	int val = a % mod;
+	long res = 1;
+	for (int i = 1; i <= x ; ++i){
+		res= (res*a)%mod;
+	}
+	return res;
+}
+
 void signing(string text,int g,int p,int q,int k,int x,int signature[2]){
 
 	/*	Step 1: Calculate r = (g^k mod p)mod q	
 		Step 2: Calculate s = ( (k^-1) * (H(M)+xr) )mod q 
 				Step 2.1 : Calculate k^-1 = a i.e ( k*a mod q = 1)
 				Step 2.2 : Calculate H(M)
-				Step 2.2 : Calculate s = ((k^-1)mod q )( (H(M))+xr) mod q)
+				Step 2.2 : Calculate s = (((k^-1)mod q )( (H(M))+xr) mod q ) )mod q
 	*/
 
 	//Step 1:
-	int r = ( int(pow(g,k))%p )%q;
+	int r = powerMod(g,k,p)%q;
 
 	//Step 2.1:
 	int invK = findInvModQ(k,q);
@@ -142,7 +155,7 @@ int verify(string text,int signature[2],int p,int q,int g,int y){
 	int u1 = (SimpleHash(text)*w )% q;
 	int u2 = (signature[0]*w )% q;
 
-	int v = ( int(pow(g,u1)*pow(y,u2)) %p ) %q;
+	int v = ( ( powerMod(g,u1,p)*powerMod(y,u2,p) ) %p ) %q;
 
 	return v;
 }
@@ -201,7 +214,7 @@ int main(){
 	
 	//Step 3:
 	int h = rand()%(p-1)+1;
-	int g = int(pow(h,(p-1)/q)) % p;
+	int g = powerMod(h,(p-1)/q,p);
 
 	//Step 4:
 	int x=rand()%q;
@@ -228,6 +241,10 @@ int main(){
 	int signature[2];
 	signing(msg,g,p,q,k,x,signature);
 	cout<<"\nSignature(r,s): ( "<<signature[0]<<" , "<<signature[1]<<" )";
+
+
+	cout<<"\nEnter the recieved msg i.e M'(with or without error): ";
+	cin>>msg;
 
 	//Step 8:
 

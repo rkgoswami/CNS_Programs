@@ -23,7 +23,7 @@ void connectionSetup(int &sockfd){
 
 	//Step 2: Intialize the struct member
 	server.sin_family = AF_INET;
-	server.sin_port = htons(4909);
+	server.sin_port = htons(4910);
 	server.sin_addr.s_addr = inet_addr("127.0.0.1");
 
 	//Step 3: binding
@@ -31,7 +31,7 @@ void connectionSetup(int &sockfd){
 	cout<<"\nUser B connected successfully with User A\n";
 }
 
-long RSAEncryptAndDecrypt(int Pi,int key[]){
+long RSAEncryptAndDecrypt(long Pi,int key[]){
 
 	long val = Pi % key[1];
 	long tVal=1;
@@ -139,26 +139,57 @@ int main(){
 	send(sockfd,&temp,sizeof(temp),0);
 	cout<<"\nPublic Key is Sent..\n";
 
-	//Step 8:
-	long Ltemp;
+
+	//Recive the nounce from 'A'
+	long Ltemp,N1,N2,ID_A;
+	long enN1,enN2,enID_A;
+
+
 	recv(sockfd,&Ltemp,sizeof(Ltemp),0);
-	long enMsg = ntohl(Ltemp);
-	cout<<"\nRecived message from User B : "<<enMsg;
-	cout<<"\nDecryting the message....Wait.!!";
-	//Step 9:
-	cout<<"\nDecrypted Message : "<<RSAEncryptAndDecrypt(enMsg,PR_b);
+	enN1 = ntohl(Ltemp);
+	N1 = RSAEncryptAndDecrypt(enN1,PR_b);
 
-	//Step 10:
-	int msg;
-	cout<<"\nEnter the message(a integer) to be sent to User A: ";
-	cin>>msg;
+	recv(sockfd,&Ltemp,sizeof(Ltemp),0);
+	enID_A = ntohl(Ltemp);
+	ID_A = RSAEncryptAndDecrypt(enID_A,PR_b);
 
-	//Step 11:
-	cout<<"\nEncrypting the message...";
-	enMsg = RSAEncryptAndDecrypt(msg,PU_a);
-	Ltemp = htonl(enMsg);
+	cout<<"\nRecived Nonce N1 : "<<N1;
+	cout<<"\nRecived ID_A : "<<ID_A;
+
+
+	//Send N1 and N2 to 'A'
+
+	cout<<"\nEnter the value of nonce n2: ";
+	cin>>N2;
+	
+	enN1 = RSAEncryptAndDecrypt(N1,PU_a);
+	enN2 = RSAEncryptAndDecrypt(N2,PU_a);
+
+	Ltemp = htonl(enN1);
 	send(sockfd,&Ltemp,sizeof(Ltemp),0);
-	cout<<"\nEncrypted message ("<<enMsg<<") is sent..\n";
+	Ltemp = htonl(enN2);
+	send(sockfd,&Ltemp,sizeof(Ltemp),0);
+
+
+	//Recieve N2 from 'A' and Authenticate it
+	recv(sockfd,&Ltemp,sizeof(Ltemp),0);
+	enN2 = ntohl(Ltemp);
+	
+	long recN2 = RSAEncryptAndDecrypt(enN2,PR_b);
+	cout<<"\nRecived Nonce N2 : "<<recN2;
+
+	if(recN2 == N2){
+		cout<<"\nSender is verified...";
+	}
+
+
+	//Recieve Key
+	recv(sockfd,&Ltemp,sizeof(Ltemp),0);
+	long enKey = ntohl(Ltemp);
+	long key = RSAEncryptAndDecrypt(enKey,PR_b);
+	long secKey = RSAEncryptAndDecrypt(key,PU_a);
+	
+	cout<<"\nSecret Key Recived: "<<secKey<<endl;
 
 	return 0;
 }

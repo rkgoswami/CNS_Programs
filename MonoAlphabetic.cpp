@@ -10,6 +10,19 @@
 
 using namespace std;
 
+void generateInputFile(){
+    //open file in write mode
+    srand(time(NULL));
+    ofstream outfile;
+    outfile.open("input.txt");
+    int i=0;
+    while(i<1000){
+        char val = rand()%26 +'a';
+        outfile<<val;
+        i++;
+    }
+}
+
 void encryptFileData(vector<char> randomAlpha){
 	
    	// open input file in read mode.
@@ -33,15 +46,15 @@ void constructFrequencyTable(vector<char>randomAlpha){
 
 	//opening both file in input mode
 	ifstream infile1,infile2; 
-   	infile1.open("input.txt");
-   	infile2.open("output.txt");
+ 	infile1.open("input.txt");
+ 	infile2.open("output.txt");
 
-   	//intializing the frequency with 0
-   	int inFrequency[26];
-   	memset(inFrequency,0,26*sizeof(int));
+ 	//intializing the frequency with 0
+ 	int inFrequency[26];
+ 	memset(inFrequency,0,26*sizeof(int));
 
-   	int outFrequency[26];
-   	memset(outFrequency,0,26*sizeof(int))	;
+ 	int outFrequency[26];
+ 	memset(outFrequency,0,26*sizeof(int))	;
 
 	double cCount=0.0;
    	char x;
@@ -65,19 +78,19 @@ void constructFrequencyTable(vector<char>randomAlpha){
 	cout<<"\n===============================================\n";
 
 	infile1.close();
-   	infile2.close();
+    infile2.close();
 }
 
 
 
 int main(){
-
 	/*
 		Creaate it first in same directory:
 		-----------------------------------
-   		input file name - input.txt (create before hand with some alphabets in it say 'aasdfghjkdfghjkl......n letters')
-   		output file name -  output.txt (empty)
+   		input file name - input.txt (generate in the program with 1000 characters)
+   		output file name -  output.txt (empty or it will automatically be created)
    	*/
+    generateInputFile(); 
 
 	/* 	MonoAlphabetic Cipher:
 		======================
@@ -91,6 +104,7 @@ int main(){
 	*/
 
 	//Step 1:
+    srand(time(NULL));
 	vector<char> randomAlpha;
   	char ch = 'A';
   	for (int i=0; i<26; ++i) 
@@ -100,17 +114,13 @@ int main(){
   	std::random_shuffle ( randomAlpha.begin(), randomAlpha.end() );
 
   	//Print out corresponding mapping table generated randomly
-  	vector<char>::iterator itr;
-
   	cout<<"\n=========================";
   	cout<<"\nAlphabet Mapping Table:";
   	cout<<"\n=========================";
   	ch = 'a';
-  	int i=0;
-  	for (itr=randomAlpha.begin(); itr!=randomAlpha.end(); ++itr){
-  		cout<<"\n"<<char(ch+i)<<" -> "<< *itr;
-  		i++;
-  	}
+    for (int i = 0; i < randomAlpha.size(); ++i){
+        cout<<"\n"<<char(ch+i)<<" -> "<< randomAlpha[i];
+    }
    	cout<<"\n=========================\n";
 
 	encryptFileData(randomAlpha);

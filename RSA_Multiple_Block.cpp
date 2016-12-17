@@ -39,7 +39,7 @@ int main(){
 
 	/* 	RSA Algorithm :
 		==============
-		Step 1: Take input prime p and q
+		Step 1: Take input prime p and q (very large value of p and q is preffered > 100) 
 		Step 2: Calculate n = p*q
 		Step 3: Calculate fi(n) = fi(p)*fi(q)=(p-1)*(q-1), 
 				since both are prime and applying Euler Totient theorem 

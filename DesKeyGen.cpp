@@ -106,9 +106,9 @@ void generateNthDesKey(string Key[2],int round){
 int main()
 {
 
-    //Take input both plainText and the key
+    //Take input key
 	string key;
-	cout<<"\nEnter the key :";
+	cout<<"\nEnter the key(16 hexa digit) :";
 	cin>>key;
 	//convert the key to binaryString
 	string BinKeyStr = hexToBinary(key);

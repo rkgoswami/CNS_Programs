@@ -1,5 +1,5 @@
 /*
-    Problem : Implementation of RC4 ( Show the stream )
+    Problem : Implementation of RSA
     BY:
         Rishav Kumar Goswami
 */
@@ -23,11 +23,11 @@ void connectionSetup(int &newsockfd){
 
 	//Step 2: Intialize the struct member
 	server.sin_family = AF_INET;
-	server.sin_port = htons(4909);
+	server.sin_port = htons(4910);
 	server.sin_addr.s_addr = inet_addr("127.0.0.1");
 
 	//Step 3: binding
-	bind(sockfd,(struct sockaddr* )&server,sizeof(server));
+	bind(sockfd,(struct sockaddr*)&server,sizeof(server));
 
 	//Step 4: Start listening
 	listen(sockfd,1);
@@ -38,7 +38,7 @@ void connectionSetup(int &newsockfd){
 
 }
 
-long RSAEncryptAndDecrypt(int Pi,int key[]){
+long RSAEncryptAndDecrypt(long Pi,int key[]){
 
 	long val = Pi % key[1];
 	long tVal=1;
@@ -146,25 +146,60 @@ int main(){
 	cout<<"\nRecived Public Key of User B : {"<<PU_b[0]<<","<<PU_b[1]<<"}\n";
 	
 
-	//Step 8:
-	int msg;
-	cout<<"\nEnter the message(a integer) to be sent to User B: ";
-	cin>>msg;
+	//Transaction Authentication
+	/*
+		Step T1 : 'A' sends Nonce N1 along with ID_A as E(PU_b,[N1||ID_A])
+		Step T2 : 'B' return Nonce N1 and N2 as E(PU_a,[N1||N2])
+		Step T3 : 'A' sends N2 to 'B' as E(PU_b,N2)
+		Step T4 : 'A' sends K to 'B' as E(PU_b,[E(PR_a,K)]) 
+	*/
 
-	//Step 9:
-	cout<<"\nEncrypting the message ...";
-	long enMsg = RSAEncryptAndDecrypt(msg,PU_b);
-	long Ltemp = htonl(enMsg);
+	//'A' send N1 and ID_A
+	long N1,N2,ID_A;
+	long enN1,enN2,Ltemp,enID_A;
+
+	cout<<"\nEnter the value of nonce n1 and ID_A: ";
+	cin>>N1>>ID_A;
+	
+	enN1 = RSAEncryptAndDecrypt(N1,PU_b);
+	enID_A = RSAEncryptAndDecrypt(ID_A,PU_b);
+	
+	Ltemp = htonl(enN1);
 	send(newsockfd,&Ltemp,sizeof(Ltemp),0);
-	cout<<"\nEncrypted message ("<<enMsg<<") is sent..";
+	Ltemp = htonl(enID_A);
+	send(newsockfd,&Ltemp,sizeof(Ltemp),0);
 
-	//Step 10:
+
+	//Recive the nonce N1 and N2 from 'B'
 	recv(newsockfd,&Ltemp,sizeof(Ltemp),0);
-	enMsg = ntohl(Ltemp);
-	cout<<"\nRecived message from User B : "<<enMsg;
-	cout<<"\nDecryting the message....Wait.!!";
-	//Step 11:
-	cout<<"\nDecrypted Message : "<<RSAEncryptAndDecrypt(enMsg,PR_a)<<"\n";
+	enN1 = ntohl(Ltemp);
+	long recN1 = RSAEncryptAndDecrypt(enN1,PR_a);
+	cout<<"\nNonce N1 recv = "<<recN1;
+
+	if(recN1 == N1){
+		cout<<"\nReciver is verified...";
+	}
+
+	recv(newsockfd,&Ltemp,sizeof(Ltemp),0);
+	enN2 = ntohl(Ltemp);
+	N2 = RSAEncryptAndDecrypt(enN2,PR_a);
+	cout<<"\nNonce N2 recv = "<<N2;
+
+	//Send the N2
+	enN2 = RSAEncryptAndDecrypt(N2,PU_b);
+	Ltemp = htonl(enN2);
+	send(newsockfd,&Ltemp,sizeof(Ltemp),0);
+
+	//Send the secret key
+	long secKey;
+	cout<<"\nEnter the value of secret key: ";
+	cin>>secKey;
+
+	long enKey = RSAEncryptAndDecrypt(secKey,PR_a);
+	enKey = RSAEncryptAndDecrypt(enKey,PU_b);
+
+	Ltemp = htonl(enKey);
+	send(newsockfd,&Ltemp,sizeof(Ltemp),0);
 	
 	return 0;
 }

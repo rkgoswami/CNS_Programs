@@ -1,4 +1,4 @@
-/*
+    /*
 	Cycle 2:
 	=======
 	1. Write a program to generate large random number using BBS random number generator algorithm and 
@@ -105,9 +105,10 @@ int main(){
         Step 1: Find 2 large prime no. p and q in form 4k+3
         Step 2: Apply the below algorithm:
                 n = p*q
+                //take s such that gcd(s,n)=1
                 x[0] = (s*s) mod n 
                 for i=1 to infinity
-                    x[i] = x[i-1]
+                    x[i] = x[i-1]*x[i-1] mod n
                     B[i]=x[i] mod 2
         Step 3 : Check the primality of output of BBS
     */

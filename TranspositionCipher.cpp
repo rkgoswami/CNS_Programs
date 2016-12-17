@@ -44,8 +44,9 @@ int main(){
 	*/
 
 	//check length is factor of n or not
+
 	int rem = message.length()%n;
-	if(rem){
+	if(rem && n<message.length() ){
 		//append (n-rem)x's at the end of message
 		for(int i=0;i<(n-rem)-1;++i)
 			message+='x';

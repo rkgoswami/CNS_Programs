@@ -8,285 +8,207 @@
 using namespace std;
 #define N 3
 
-void getCoFactorMatrix(int mat[N][N], int temp[N][N], int pr, int pc, int n){
-    int r=0,c=0;
- 
-    // Looping for each element of the matrix
-    for (int i=0;i<n;i++){
-        for (int j=0;j<n;j++)
-        {
-            /* Copying element into temporary co-factor matrix */
-            if (i!= pr && j!= pc){
-                temp[r][c++] = mat[i][j];
-				
-               //increament the row	
-                if (c == n-1){
-                    c = 0;
-                    r++;
-                }
-            }
-        }
-    }
-}
+void getCofactorMatrix(int matrix[N][N],int coMatrix[N][N],int pr,int pc,int n){
 
-int determinant(int A[N][N], int n){
+	int r=0,c=0;
+	for (int i = 0; i < n; ++i){
+		for (int j = 0; j < n; ++j){
+			if (pr!=i && pc!=j){
+				coMatrix[r][c++]=matrix[i][j];
 
-    int Det = 0;
-    
-    //base condition
-    if (n==2){
-    	return ((A[0][0]*A[1][1]) - (A[0][1]*A[1][0]));
-    }
- 
-    int temp[N][N]; // To store co-factors
-    int sign = 1;  // To store sign multiplier
-
-    /* for each element of first row iterate */
-    for (int i=0; i<n; i++){
-        /* Getting Cofactor of A[0][i] */
-        
-        getCoFactorMatrix(A,temp, 0, i, n);
-        Det += sign * A[0][i] * determinant(temp,n - 1);
- 
-        /* alternate sign */
-        sign = -1*sign;
-    }
-    return Det;
-}
-
-void matrixMultiply(int res[3][1],int key[3][3],int mat[3][1],int n){
-
-	for(int i=0;i<n;++i){
-		for(int j=0;j<1;++j){
-			res[i][j]=0;
-			for(int k=0;k<n;++k){
-				res[i][j]+=key[i][k]*mat[k][j];
+				if (c==n-1){
+					r++;
+					c=0;
+				}
 			}
 		}
 	}
 }
 
-int moduloInverse(int num){
-	int i=1;
-	while(true){
-		if( (num*i % 26) == 1){
-			break;
-		}
+int getDeterminant(int matrix[N][N],int n){
+
+	//base condition
+	if (n==2){
+		return (matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0]);
+	}
+	int det=0,sign=1;
+	int coMatrix[N][N];
+	for (int i = 0; i < n; ++i){
+		
+		//get the cofactor matrix
+		getCofactorMatrix(matrix,coMatrix,0,i,n);
+
+		//call for determinant again
+		int val = getDeterminant(coMatrix,n-1);
+		det+=matrix[0][i]*val*sign;
+		sign*=-1;
+	}
+	return det;
+}
+
+int findMulInverse(int det){
+	int i=0;
+	while((det*i)%26!=1){
 		i++;
 	}
 	return i;
 }
 
-int negModulus(int num){
-	int absVal = abs(num);
-	int fac = absVal/26;
-	int val = abs( ((fac+1)*26) - absVal);
+int negMod(int val){
+	int absV = abs(val);
+	int q = absV/26;
 
-	return val;
+	int negVal = (q+1)*26 - absV;
+
+	return negVal%26;
 }
 
-int printMatrix(int mat[N][N],int n){
+void inverseMatrix(int matrix[N][N],int invMatrix[N][N],int n){
 
-	for (int i = 0; i < n; ++i){
-		for (int j = 0; j < n; ++j){
-			cout<<mat[i][j]<<" ";
+	//calculate the detereminant and find d^-1
+	int det = getDeterminant(matrix,n);
+	det = (det<0)?negMod(det):(det%26);
+
+	//find d^-1
+	int k_inv = findMulInverse(det);
+	cout<<"\n"<<det<<"^-1 = "<<k_inv; 
+
+	if(n==2){
+		//exchange the main diagonal
+
+		invMatrix[0][0]=matrix[1][1];
+		invMatrix[1][1]=matrix[0][0];
+
+		//negate the off diagonal
+		invMatrix[0][1]=-1*matrix[0][1];
+		invMatrix[1][0]=-1*matrix[1][0];
+
+		for (int i = 0; i < n; ++i){
+			for (int j = 0; j < n; ++j){
+				int val = invMatrix[i][j]*k_inv;
+				val = (val<0)?negMod(val):(val%26);
+				invMatrix[i][j]=val;
+			}
 		}
-	}
-}
-
-void inverseMatrix2x2(int mat[N][N],int invMat[N][N],int n){
-
-	//swap the main digonal 
-	invMat[0][0]=mat[1][1];
-	invMat[1][1]=mat[0][0];
-
-	//negate the off diagonal
-	invMat[0][1]=-1*mat[0][1];
-	invMat[1][0]=-1*mat[1][0];
-
-
-	int det = determinant(mat,n);
-
-	det = (det<0)?negModulus(det):(det%26);
-
-	int k = moduloInverse(det);
-
-	cout<<"\nDet = "<<det;
-	cout<<"\nK^-1 = "<<k;
-
-
-	for (int i = 0; i < n; ++i){
-		for (int j = 0; j < n; ++j){
-			invMat[i][j]=k*invMat[i][j];
-			//check negative value
-			invMat[i][j] = (invMat[i][j]<0)?negModulus(invMat[i][j]):(invMat[i][j]%26);
-
-		}
-	}
-
-}
-
-void inverseMatrix(int mat[N][N],int invMat[N][N],int n){
-	
-	/*
-		Step 1: Generate the cofactor matrix for position (i,j)
-		Step 2: Find determinant for above cofactor matrix 
-		Step 3: Multiply the determinant with *sign and put it in coMat[i][j]
-		Step 4: Follow the above Step 1 to 4 for all position of the given key matrix
-		Step 5: Find Ajoint = Transpose[coFactor Matrix]
-		Step 6: Find modulo inverse of 26 for determinant of mat i.e (det)*k mod 26 = 1, find k
-		Step 7: Multiply the k with Ajoint to form inverse matrix then also take modulus of 26
-	*/
-	
-
-	int coMat[N][N],temp[N][N],det,sign=1; 
-
-	for(int i = 0; i < n; ++i){
-		for (int j = 0; j < n; ++j){
-			//Step 1:
-			getCoFactorMatrix(mat,temp,i,j,n);	
-			//Step 2:
-			det = determinant(temp,n-1);
-			//Step 3:
-			coMat[i][j]=det*(sign);
-			sign =((i+j)%2 == 0)? -1:1;
-		}
-		//Step 4: Continue
-	}
-	//Step 5:
-	for (int i = 0; i < n; ++i){
-		for (int j = 0; j < n; ++j){
-			invMat[j][i]=coMat[i][j];
-		}
-	}
-
-	
-	//Step 6:
-	det = determinant(mat,n);
-
-	det = (det<0)?negModulus(det):(det%26);
-	
-	int k = moduloInverse(det);
-
-	cout<<"\nK^-1 = "<<k;
-
-	//Step 7:
-	for (int i = 0; i < n; ++i){
-		for (int j = 0; j < n; ++j){
-			invMat[i][j]=k*invMat[i][j];
-			
-			//modulus 26
-			invMat[i][j] = (invMat[i][j]<0)?negModulus(invMat[i][j]):(invMat[i][j]%26);
-		}
-	}
-}
-
-int main(){
-	int n;
-	cout<<"\nDimension of key : \n1. 2 x 2\n2. 3 x 3";
-	cout<<"\nEnter the choice : ";
-	int choice;
-	cin>>choice;
-	if(choice == 1){
-		n=2;
-	}
-	else if(choice == 2){
-		n=3;
 	}
 	else{
-		cout<<"\nInvalid choice:";
-		exit(0);
-	}
-	
-	string message;
-	int key[3][3];
-	int mat[3][1];
-	int res[3][1];
-	
-	getchar();
-	cout<<"\nEnter the message : ";
-	getline(cin,message);
+		int coMatrix[N][N],temp[N][N];
+		int sign=1;
+		for (int i = 0; i < n; ++i){
+			for (int j = 0; j < n; ++j){
+				getCofactorMatrix(matrix,coMatrix,i,j,n);
 
-	//if the message is not a factor of n then append x at the end
-	int rem = n - message.length()%n;
-	
-	for(int i=0;i<rem;++i){
-		message+='x';
+				//call for determinant again
+				int val = getDeterminant(coMatrix,n-1)*sign*k_inv;
+				val = (val<0)?negMod(val):(val%26);
+
+				temp[i][j]=val;
+				sign*=-1;
+			}
+		}
+		//transpose the matrix
+		for (int i = 0; i < n; ++i){
+			for (int j = 0; j < n; ++j){
+				invMatrix[j][i]=temp[i][j];
+			}
+		}
 	}
 	
-	
-	//get the key matrix
-	cout<<"\nEnter the key matrix :";
+
+}
+
+void displayMat(int matrix[N][N],int n){
+
+	for (int i = 0; i < n; ++i){
+		for (int j = 0; j < n; ++j){
+			cout<<matrix[i][j]<<" ";
+		}
+		cout<<"\n";
+	}
+}
+
+void matrixMultiply(int keyMatrix[N][N],int strMat[N][1],int result[N][1],int n){
+
 	for(int i=0;i<n;++i){
-		for(int j=0;j<n;++j){
-			cin>>key[i][j];
+		for(int j=0;j<1;++j){
+			result[i][j]=0;
+			for(int k=0;k<n;++k){
+				result[i][j]+=keyMatrix[i][k]*strMat[k][j];
+			}
 		}
 	}
-	
+
+}
+
+string encryptAndDecryption(int keyMatrix[N][N],string msg,int n){
+
+	//form mat[n][1];
+	int strMat[N][1],result[N][1];
+
+	//check if strlen is factor of n or not
+	if(msg.length()%n!=0){
+		int rem = n - msg.length()%n;
+		for (int i = 0; i < rem; ++i){
+			msg+='x';
+		}
+	}
+
 	string enMsg="";
-
-	//main logic for encrytpion
-	for(int i=0;i<message.length();){
+	int len = msg.length();
+	for (int i = 0; i < len;){
 		
-		for(int j=0;j<n;++j){
-			if(message[i]==' '){
-				j--;
-				i++;
-			}
-			else{
-				mat[j][0]=(message[i++]-'a') ;	
-			}
-		}			
+		//generate the strMat
+		for (int j = 0; j < n; ++j){
+			strMat[j][0]=msg[i++]-'a';
+		}
 		
-		matrixMultiply(res,key,mat,n);
+		//multiply
+		matrixMultiply(keyMatrix,strMat,result,n);
 
-		//read the result in a string
-		for(int i=0;i<n;++i){
-			enMsg+=(char)((res[i][0] % 26) + 97);
+		for (int i = 0; i < n; ++i){
+			enMsg += ((result[i][0]%26)+'a');
+		}
+	}
+	return enMsg;
+}
+
+int main(int argc, char const *argv[]){
+	
+	int n;
+	int matrix[N][N];
+	cout<<"\nSelect the choice for n (2 or 3): ";
+	cin>>n;
+
+	cout<<"\nEnter the Key matrix :\n ";
+	for (int i = 0; i < n; ++i){
+		for (int j = 0; j < n; ++j){
+			cin>>matrix[i][j];
 		}
 	}
 
+	string msg;
+	cout<<"\nEnter the Message : ";
+	cin>>msg;
+
+	/*Encryption Process*/
+	string enMsg = encryptAndDecryption(matrix,msg,n);
+	
 	//Display the encrypted text
 	cout<<"\n===========================================";
 	cout<<"\nEncryption Process:";
     cout<<"\n===========================================";
-    cout<<"\nPlain Text : "<<message;
+    cout<<"\nPlain Text : "<<msg;
     cout<<"\nDecrypted Text : "<<enMsg;
     cout<<"\n===========================================\n";
 	
-	/* Decryption Process*/
+	/*Decryption Process*/
+	int invMatrix[N][N];
+	inverseMatrix(matrix,invMatrix,n);
+	
+	cout<<"\nInverse of Key matrix : \n";
+	displayMat(invMatrix,n);
 
-    /* find out the keyInv and then follow the same steps as we did in encryption */
-    int keyInv[N][N];
-
-    //Call the inverseMatrix()
-   	if(n==2)
-    	inverseMatrix2x2(key,keyInv,n);
-    else
-    	inverseMatrix(key,keyInv,n);
-
-    //print the inverse matrix
-    cout<<"\nInverse matrix :\n";
-    for (int i = 0; i < n; ++i){
-    	for (int j = 0; j < n; ++j){
-    		cout<<keyInv[i][j]<<"\t";
-    	}
-    	cout<<"\n";
-    }
-
-    string decMsg="";
-    for(int i=0;i<enMsg.length();){
-		for(int j=0;j<n;++j){
-			mat[j][0]=(enMsg[i++]-'a') ;	
-		}	
-
-		matrixMultiply(res,keyInv,mat,n);
-		
-		//read the result in a string
-		for(int i=0;i<n;++i){
-			decMsg+=(char)((res[i][0] % 26) + 97);
-		}
-	}
+	string decMsg = encryptAndDecryption(invMatrix,enMsg,n);
 
 	//Display the encrypted text
 	cout<<"\n===========================================";
@@ -296,5 +218,6 @@ int main(){
     cout<<"\nDecrypted Text : "<<decMsg;
     cout<<"\n===========================================\n";
 		
+
 	return 0;
 }
